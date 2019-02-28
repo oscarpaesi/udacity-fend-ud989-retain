@@ -12,7 +12,14 @@ $(function(){
             localStorage.notes = JSON.stringify(data);
         },
         getAllNotes: function() {
-            return JSON.parse(localStorage.notes);
+            let notes = [];
+            JSON.parse(localStorage.notes).forEach(note => {
+                notes.push({
+                    content: note.content,
+                    created: new Date(note.created)
+                });
+            });
+            return notes;
         }
     };
 
@@ -20,13 +27,14 @@ $(function(){
     var octopus = {
         addNewNote: function(noteStr) {
             model.add({
-                content: noteStr
+                content: noteStr,
+                created: new Date()
             });
             view.render();
         },
 
         getNotes: function() {
-            return model.getAllNotes();
+            return model.getAllNotes().reverse();
         },
 
         init: function() {
@@ -50,10 +58,8 @@ $(function(){
         },
         render: function(){
             var htmlStr = '';
-            octopus.getNotes().forEach(function(note){
-                htmlStr += '<li class="note">'+
-                        note.content +
-                    '</li>';
+            octopus.getNotes().forEach(function(note) {
+                htmlStr += `<li class="note"> ${note.content} (${note.created.toISOString().slice(0, 10)}) </li>`;
             });
             this.noteList.html( htmlStr );
         }
